@@ -37,4 +37,7 @@ app.get("/", (req, res) => {
   res.send("Calligraphy API Running");
 });
 
-module.exports = app;
+// Export a serverless-compatible handler for Vercel
+module.exports = (req, res) => {
+  return app(req, res);
+};
