@@ -32,9 +32,11 @@ let initialized = false;
 function initializeRoutes() {
   if (initialized) return;
   try {
-    app.use("/api/auth", require("../backend/routes/authRoutes"));
-    app.use("/api/products", require("../backend/routes/productRoutes"));
-    app.use("/api/orders", require("../backend/routes/orderRoutes"));
+    // Register routes without the '/api' prefix. Vercel routes '/api/*' to this function,
+    // so we'll strip the '/api' prefix from incoming requests in the handler below.
+    app.use("/auth", require("../backend/routes/authRoutes"));
+    app.use("/products", require("../backend/routes/productRoutes"));
+    app.use("/orders", require("../backend/routes/orderRoutes"));
     initialized = true;
   } catch (err) {
     console.error('Failed to initialize routes:', err);
@@ -49,6 +51,12 @@ app.get("/", (req, res) => {
 // Export a serverless-compatible handler for Vercel
 module.exports = (req, res) => {
   try {
+    // Vercel invokes the function at the same path it received (e.g., '/api/').
+    // Strip the '/api' prefix so Express routes (registered without '/api') match correctly.
+    if (req.url && req.url.startsWith('/api')) {
+      req.url = req.url.replace(/^\/api/, '') || '/';
+    }
+
     initializeRoutes();
     return app(req, res);
   } catch (err) {
