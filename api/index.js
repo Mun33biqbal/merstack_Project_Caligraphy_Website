@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const connectDB = require("../config/db");
+const connectDB = require("../backend/config/db");
 
 dotenv.config();
 connectDB();
@@ -26,12 +26,12 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve uploads folder
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('../backend/uploads'));
 
 // ROUTES
-app.use("/api/auth", require("../routes/authRoutes"));
-app.use("/api/products", require("../routes/productRoutes"));
-app.use("/api/orders", require("../routes/orderRoutes"));
+app.use("/api/auth", require("../backend/routes/authRoutes"));
+app.use("/api/products", require("../backend/routes/productRoutes"));
+app.use("/api/orders", require("../backend/routes/orderRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Calligraphy API Running");
